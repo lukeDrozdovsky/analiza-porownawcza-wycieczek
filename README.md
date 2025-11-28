@@ -1,0 +1,1 @@
+# analiza-porownawcza-wycieczek
