@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malaga vs Pafos: Pełna Analiza z Lotami</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        sand: {
+                            50: '#fdfbf7',
+                            100: '#f7f3e8',
+                            200: '#efe5cd',
+                            300: '#e5d0a6',
+                            400: '#dbb678',
+                            500: '#d09b52',
+                            600: '#b67d41',
+                            800: '#754d2f',
+                        },
+                        ocean: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        },
+                        terracotta: {
+                            500: '#e07a5f',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        
+        .tab-active {
+            border-bottom: 2px solid #e07a5f;
+            color: #754d2f;
+            font-weight: 600;
+        }
+        
+        .tab-inactive {
+            color: #9ca3af;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+    </style>
+
+    <!-- Chosen Palette: Warm Neutrals (Sand/Terracotta) with Ocean Blue accents. -->
+    
+    <!-- Application Structure Plan: 
+         1. Dashboard: Includes Flight Cost Highlight.
+         2. Financial Analysis: Updated Chart with Flight Data (Malaga ~927zł vs Pafos ~624zł).
+         3. Deep Dive: Accommodation & Vibe details.
+         4. Attractions: 5 items per city.
+         5. Itinerary: Day by day plan.
+    -->
+
+    <!-- Visualization & Content Choices:
+         - Stacked Bar Chart updated to include "Loty" as the base cost.
+         - Data points updated based on user screenshots (926.70 PLN Malaga, 624.30 PLN Pafos).
+         - Logic: Flights significantly impact the comparison, making the total gap smaller.
+    -->
+    
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+</head>
+<body class="bg-sand-50 text-gray-800 antialiased min-h-screen flex flex-col">
+
+    <header class="bg-white border-b border-sand-200 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-sand-800 tracking-tight">Trip<span class="text-terracotta-500">Analyzer</span> <span class="text-xs text-gray-400 font-normal ml-2">v2.0 (z lotami)</span></span>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <button onclick="scrollToSection('dashboard')" class="text-gray-600 hover:text-terracotta-500 px-3 py-2 text-sm font-medium">Przegląd</button>
+                    <button onclick="scrollToSection('costs')" class="text-gray-600 hover:text-terracotta-500 px-3 py-2 text-sm font-medium">Budżet</button>
+                    <button onclick="scrollToSection('details')" class="text-gray-600 hover:text-terracotta-500 px-3 py-2 text-sm font-medium">Miasta</button>
+                    <button onclick="scrollToSection('itinerary')" class="text-gray-600 hover:text-terracotta-500 px-3 py-2 text-sm font-medium">Plan</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        
+        <div id="dashboard" class="max-w-6xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-extrabold text-sand-800 sm:text-5xl mb-4">Malaga vs. Pafos</h1>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Kompletna analiza kosztów i wrażeń dla Ciebie i Julii. <br>
+                    <span class="text-terracotta-500 font-semibold">Aktualizacja: Uwzględniono ceny biletów lotniczych.</span>
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                <div class="bg-white rounded-xl shadow-sm border border-sand-100 p-6 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-terracotta-500 opacity-10 rounded-bl-full -mr-4 -mt-4"></div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Malaga, Hiszpania 🇪🇸</h2>
+                    <p class="text-sm font-semibold text-terracotta-500 mb-4 uppercase tracking-wide">13 - 16 Lutego (Walentynki)</p>
+                    <div class="space-y-3 text-sm text-gray-600">
+                        <div class="flex items-center justify-between"><span class="flex items-center"><span class="w-8 text-center text-xl mr-3">✈️</span> <strong>Loty (2 os.):</strong></span> <span class="font-bold text-gray-900">926.70 zł</span></div>
+                        <div class="flex items-center"><span class="w-8 text-center text-xl mr-3">🎭</span> <span><strong>Vibe:</strong> Karnawał, Miasto, Tłumy</span></div>
+                        <div class="flex items-center"><span class="w-8 text-center text-xl mr-3">🏠</span> <span><strong>Nocleg:</strong> Residencia San José (Pokój)</span></div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-sand-100 p-6 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-ocean-500 opacity-10 rounded-bl-full -mr-4 -mt-4"></div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Pafos, Cypr 🇨🇾</h2>
+                    <p class="text-sm font-semibold text-ocean-600 mb-4 uppercase tracking-wide">26 Lutego - 02 Marca</p>
+                    <div class="space-y-3 text-sm text-gray-600">
+                        <div class="flex items-center justify-between"><span class="flex items-center"><span class="w-8 text-center text-xl mr-3">✈️</span> <strong>Loty (2 os.):</strong></span> <span class="font-bold text-gray-900">624.30 zł</span></div>
+                        <div class="flex items-center"><span class="w-8 text-center text-xl mr-3">🌊</span> <span><strong>Vibe:</strong> Natura, Roadtrip, Relaks</span></div>
+                        <div class="flex items-center"><span class="w-8 text-center text-xl mr-3">🏢</span> <span><strong>Nocleg:</strong> Angela Apts (Apartament)</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section id="costs" class="bg-sand-50 py-10 border-t border-sand-200">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-8 text-center md:text-left">
+                    <h3 class="text-2xl font-bold text-sand-800">Pełny Kosztorys (2 osoby)</h3>
+                    <p class="text-gray-600 mt-2 text-sm">
+                        Malaga ma droższe loty, ale jest tańsza na miejscu (brak auta, krótszy pobyt). <br>
+                        Pafos ma tanie loty, ale dochodzi auto i dodatkowy dzień pobytu.
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
+                    <div class="chart-container">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-sand-100">
+                    <table class="min-w-full text-sm text-left">
+                        <thead class="bg-sand-100 text-sand-800 font-semibold">
+                            <tr>
+                                <th class="px-6 py-4">Kategoria</th>
+                                <th class="px-6 py-4 text-center">Malaga (3 noce)</th>
+                                <th class="px-6 py-4 text-center">Pafos (4 noce)</th>
+                                <th class="px-6 py-4 hidden sm:table-cell">Komentarz</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr class="bg-blue-50">
+                                <td class="px-6 py-4 font-bold text-blue-900">Loty (Wrocław ⇄ Cel)</td>
+                                <td class="px-6 py-4 text-center font-bold text-blue-900">927 PLN</td>
+                                <td class="px-6 py-4 text-center font-bold text-blue-900">624 PLN</td>
+                                <td class="px-6 py-4 text-gray-500 hidden sm:table-cell">Loty na Cypr tańsze o ~300 zł.</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-medium">Zakwaterowanie</td>
+                                <td class="px-6 py-4 text-center">508 PLN</td>
+                                <td class="px-6 py-4 text-center">702 PLN</td>
+                                <td class="px-6 py-4 text-gray-500 hidden sm:table-cell">Ceny z Twoich screenów (Booking).</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-medium">Transport lokalny</td>
+                                <td class="px-6 py-4 text-center">~200 PLN</td>
+                                <td class="px-6 py-4 text-center">~500 PLN</td>
+                                <td class="px-6 py-4 text-gray-500 hidden sm:table-cell">Malaga: Bus/Rower. Pafos: Auto + Paliwo.</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-medium">Wyżywienie</td>
+                                <td class="px-6 py-4 text-center">~600 PLN</td>
+                                <td class="px-6 py-4 text-center">~750 PLN</td>
+                                <td class="px-6 py-4 text-gray-500 hidden sm:table-cell">Obiady "na mieście", śniadania z marketu.</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-medium">Atrakcje</td>
+                                <td class="px-6 py-4 text-center">~180 PLN</td>
+                                <td class="px-6 py-4 text-center">~100 PLN</td>
+                                <td class="px-6 py-4 text-gray-500 hidden sm:table-cell">Malaga ma więcej biletowanych muzeów.</td>
+                            </tr>
+                            <tr class="bg-sand-100 font-bold text-sand-900 text-lg">
+                                <td class="px-6 py-4">RAZEM (Szacunek)</td>
+                                <td class="px-6 py-4 text-center">~2415 PLN</td>
+                                <td class="px-6 py-4 text-center">~2676 PLN</td>
+                                <td class="px-6 py-4 hidden sm:table-cell text-sm font-normal">Różnica stopniała do ~260 zł!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="details" class="py-12 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-center mb-8 border-b border-gray-200">
+                <button id="btn-malaga" onclick="switchCity('malaga')" class="px-8 py-3 text-lg font-medium tab-active transition-colors">Malaga</button>
+                <button id="btn-pafos" onclick="switchCity('pafos')" class="px-8 py-3 text-lg font-medium tab-inactive hover:text-sand-600 transition-colors">Pafos</button>
+            </div>
+
+            <div id="content-malaga" class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">💃 Sytuacja Karnawałowa</h3>
+                        <p class="text-gray-600 mb-4">
+                            Malaga w połowie lutego to epicentrum zabawy.
+                        </p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700 text-sm">
+                            <li><strong>Atmosfera:</strong> Miasto tętni życiem, ulice są pełne muzyki i przebrań.</li>
+                            <li><strong>Zwiedzanie:</strong> Do południa spokojnie. Wieczorem centrum (Calle Larios) może być nieprzejezdne dla rowerów.</li>
+                            <li><strong>Dla kogo:</strong> Jeśli lubicie energię miasta, gwar i kulturę hiszpańską.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">🏠 Nocleg: Residencia San José</h3>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-1">
+                                <p class="text-gray-600 text-sm mb-3">Typowy akademik/rezydencja w centrum. Cena: <strong>508 zł</strong>.</p>
+                                <ul class="text-sm space-y-1 text-gray-600">
+                                    <li>✅ <strong>Plusy:</strong> Ścisłe centrum, bardzo tanio.</li>
+                                    <li>❌ <strong>Minusy:</strong> Standard "studencki", wspólna łazienka (zależy od opcji), brak prywatnej kuchni.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-ocean-50 p-6 rounded-xl border border-ocean-100">
+                        <h4 class="font-bold text-ocean-900 mb-4">Pogoda: Luty 🌤️</h4>
+                        <div class="flex justify-between items-end mb-2">
+                            <span class="text-4xl font-bold text-ocean-600">14-17°C</span>
+                            <span class="text-sm text-ocean-800">Dzień</span>
+                        </div>
+                        <p class="text-sm text-ocean-800">Chłodne noce (9°C). Słonecznie, ale wietrznie.</p>
+                    </div>
+
+                    <div class="bg-sand-50 p-6 rounded-xl border border-sand-100">
+                        <h4 class="font-bold text-sand-800 mb-2">Atrakcje (Ceny)</h4>
+                        <ul class="text-sm space-y-2 text-gray-700">
+                            <li class="flex justify-between"><span>Alcazaba</span> <span class="font-bold">~3.50€</span></li>
+                            <li class="flex justify-between"><span>Katedra</span> <span class="font-bold">~8.00€</span></li>
+                            <li class="flex justify-between"><span>Muzeum Picassa</span> <span class="font-bold">~12.00€</span></li>
+                            <li class="flex justify-between"><span>Plaża Malagueta</span> <span class="font-bold text-green-600">Free</span></li>
+                            <li class="flex justify-between"><span>Gibralfaro</span> <span class="font-bold">~3.50€</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-pafos" class="grid grid-cols-1 lg:grid-cols-3 gap-8 hidden animate-fade-in">
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">🚗 Roadtrip po Cyprze</h3>
+                        <p class="text-gray-600 mb-4">
+                            Tutaj wypoczywacie aktywniej, ale z dala od tłumów.
+                        </p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700 text-sm">
+                            <li><strong>Auto:</strong> Konieczne, by zobaczyć najpiękniejsze miejsca (Wąwóz Avakas, Skała Afrodyty).</li>
+                            <li><strong>Ruch lewostronny:</strong> Trzeba się przyzwyczaić!</li>
+                            <li><strong>Dla kogo:</strong> Jeśli wolicie naturę, klify, morze i własne tempo.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">🏠 Nocleg: Angela Holiday Apts</h3>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <div class="flex-1">
+                                <p class="text-gray-600 text-sm mb-3">Apartament z basenem i kuchnią. Cena: <strong>702 zł</strong>.</p>
+                                <ul class="text-sm space-y-1 text-gray-600">
+                                    <li>✅ <strong>Plusy:</strong> Całe mieszkanie, kuchnia (tanie śniadania!), balkon. Wyższy standard.</li>
+                                    <li>❌ <strong>Minusy:</strong> Dalej od portu (1.5km), basen zimny w lutym.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-ocean-50 p-6 rounded-xl border border-ocean-100">
+                        <h4 class="font-bold text-ocean-900 mb-4">Pogoda: Luty/Marzec ☀️</h4>
+                        <div class="flex justify-between items-end mb-2">
+                            <span class="text-4xl font-bold text-ocean-600">18°C</span>
+                            <span class="text-sm text-ocean-800">Dzień</span>
+                        </div>
+                        <p class="text-sm text-ocean-800">Cieplej niż w Maladze. Odczuwalne "przedwiośnie".</p>
+                    </div>
+
+                    <div class="bg-sand-50 p-6 rounded-xl border border-sand-100">
+                        <h4 class="font-bold text-sand-800 mb-2">Atrakcje (Ceny)</h4>
+                        <ul class="text-sm space-y-2 text-gray-700">
+                            <li class="flex justify-between"><span>Park Archeologiczny</span> <span class="font-bold">~4.50€</span></li>
+                            <li class="flex justify-between"><span>Grobowce Królewskie</span> <span class="font-bold">~2.50€</span></li>
+                            <li class="flex justify-between"><span>Skała Afrodyty</span> <span class="font-bold text-green-600">Free</span></li>
+                            <li class="flex justify-between"><span>Wrak Edro III</span> <span class="font-bold text-green-600">Free</span></li>
+                            <li class="flex justify-between"><span>Wąwóz Avakas</span> <span class="font-bold text-green-600">Free</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="itinerary" class="py-12 bg-sand-50">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-8 text-center">Wstępny Plan Wyjazdu</h3>
+                
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row">
+                    <div class="bg-gray-50 w-full md:w-1/4 p-4 border-r border-gray-100 flex md:flex-col gap-2">
+                         <button onclick="showPlan('plan-malaga')" id="tab-plan-malaga" class="w-full text-left px-4 py-3 rounded-lg bg-terracotta-500 text-white font-medium shadow-sm transition-all">🇪🇸 Malaga</button>
+                         <button onclick="showPlan('plan-pafos')" id="tab-plan-pafos" class="w-full text-left px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-100 font-medium transition-all">🇨🇾 Pafos</button>
+                    </div>
+
+                    <div class="p-6 md:p-8 w-full md:w-3/4">
+                        <div id="plan-malaga" class="space-y-6">
+                            <div class="flex">
+                                <div class="w-14 flex-shrink-0 text-terracotta-500 font-bold text-sm">PT 13.02</div>
+                                <div><h5 class="font-bold text-gray-800">Przylot 09:30</h5><p class="text-sm text-gray-600">Szybki dojazd do centrum. Zameldowanie. Spacer po Muelle Uno i plaży. Wieczór tapas.</p></div>
+                            </div>
+                            <div class="flex">
+                                <div class="w-14 flex-shrink-0 text-terracotta-500 font-bold text-sm">SB 14.02</div>
+                                <div><h5 class="font-bold text-gray-800">Walentynki z Historią</h5><p class="text-sm text-gray-600">Rano: Alcazaba (mniejszy tłum). Południe: Katedra. Wieczór: Karnawałowe szaleństwo na mieście.</p></div>
+                            </div>
+                            <div class="flex">
+                                <div class="w-14 flex-shrink-0 text-terracotta-500 font-bold text-sm">ND 15.02</div>
+                                <div><h5 class="font-bold text-gray-800">Rowery i Ryby</h5><p class="text-sm text-gray-600">Wynajem rowerów. Trasa wzdłuż morza do Pedregalejo na obiad (Espetos). Muzeum Picassa po południu.</p></div>
+                            </div>
+                            <div class="flex">
+                                <div class="w-14 flex-shrink-0 text-terracotta-500 font-bold text-sm">PN 16.02</div>
+                                <div><h5 class="font-bold text-gray-800">Wylot 10:10</h5><p class="text-sm text-gray-600">Wczesne śniadanie i bus na lotnisko.</p></div>
+                            </div>
+                        </div>
+
+                        <div id="plan-pafos" class="space-y-6 hidden">
+                            <div class="flex">
+                                <div class="w-14 flex-shrink-0 text-ocean-600 font-bold text-sm">CZ 26.02</div>
+                                <div><h5 class="font-bold text-gray-800">Przylot 11:50</h5><p class="text-sm text-gray-600">Odbiór auta (lub bus). Zakupy w Lidlu. Instalacja w apartamencie i pierwszy zachód słońca.</p></div>
+                            </div>
+                            <div class="flex">
+                                <div class="w-14 flex-shrink-0 text-ocean-600 font-bold text-sm">PT 27.02</div>
+                                <div><h5 class="font-bold text-gray-800">Starożytne Pafos</h5><p class="text-sm text-gray-600">Grobowce Królewskie (blisko hotelu). Park Archeologiczny w porcie. Obiad Meze.</p></div>
+                            </div>
+                            <div class="flex">
+                                <div class="w-14 flex-shrink-0 text-ocean-600 font-bold text-sm">SB 28.02</div>
+                                <div><h5 class="font-bold text-gray-800">Natura (Auto)</h5><p class="text-sm text-gray-600">Wrak statku Edro III. Wąwóz Avakas (lekki trekking). Dzika plaża Lara.</p></div>
+                            </div>
+                            <div class="flex">
+                                <div class="w-14 flex-shrink-0 text-ocean-600 font-bold text-sm">ND 01.03</div>
+                                <div><h5 class="font-bold text-gray-800">Legenda Afrodyty</h5><p class="text-sm text-gray-600">Skała Afrodyty (piękne widoki). Wioska górska (np. Omodos) lub Kurion.</p></div>
+                            </div>
+                            <div class="flex">
+                                <div class="w-14 flex-shrink-0 text-ocean-600 font-bold text-sm">PN 02.03</div>
+                                <div><h5 class="font-bold text-gray-800">Wylot (Data przykładowa)</h5><p class="text-sm text-gray-600">Powrót do Wrocławia.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-sand-800 text-sand-200 py-6 text-center text-sm">
+        <p>Analiza przygotowana dla Ciebie i Julii</p>
+    </footer>
+
+    <script>
+        function switchCity(city) {
+            const btnMalaga = document.getElementById('btn-malaga');
+            const btnPafos = document.getElementById('btn-pafos');
+            const contentMalaga = document.getElementById('content-malaga');
+            const contentPafos = document.getElementById('content-pafos');
+
+            if (city === 'malaga') {
+                btnMalaga.classList.add('tab-active');
+                btnMalaga.classList.remove('tab-inactive');
+                btnPafos.classList.remove('tab-active');
+                btnPafos.classList.add('tab-inactive');
+                contentMalaga.classList.remove('hidden');
+                contentPafos.classList.add('hidden');
+            } else {
+                btnPafos.classList.add('tab-active');
+                btnPafos.classList.remove('tab-inactive');
+                btnMalaga.classList.remove('tab-active');
+                btnMalaga.classList.add('tab-inactive');
+                contentPafos.classList.remove('hidden');
+                contentMalaga.classList.add('hidden');
+            }
+        }
+
+        function showPlan(planId) {
+            document.getElementById('plan-malaga').classList.add('hidden');
+            document.getElementById('plan-pafos').classList.add('hidden');
+            document.getElementById('tab-plan-malaga').classList.remove('bg-terracotta-500', 'text-white');
+            document.getElementById('tab-plan-malaga').classList.add('text-gray-600');
+            document.getElementById('tab-plan-pafos').classList.remove('bg-ocean-500', 'text-white');
+            document.getElementById('tab-plan-pafos').classList.add('text-gray-600');
+
+            document.getElementById(planId).classList.remove('hidden');
+
+            const activeBtn = document.getElementById('tab-' + planId);
+            activeBtn.classList.remove('text-gray-600');
+            if(planId.includes('malaga')) {
+                activeBtn.classList.add('bg-terracotta-500', 'text-white');
+            } else {
+                activeBtn.classList.add('bg-ocean-500', 'text-white');
+            }
+        }
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Malaga (3 noce)', 'Pafos (4 noce)'],
+                    datasets: [
+                        {
+                            label: 'Loty (2 os.)',
+                            data: [927, 624],
+                            backgroundColor: '#2563eb', 
+                        },
+                        {
+                            label: 'Zakwaterowanie',
+                            data: [508, 702],
+                            backgroundColor: '#e07a5f',
+                        },
+                        {
+                            label: 'Transport Lokalny',
+                            data: [200, 500],
+                            backgroundColor: '#f2cc8f',
+                        },
+                        {
+                            label: 'Wyżywienie',
+                            data: [600, 750],
+                            backgroundColor: '#81b29a',
+                        },
+                        {
+                            label: 'Atrakcje',
+                            data: [180, 100],
+                            backgroundColor: '#3d405b',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        title: { display: true, text: 'Całkowity Koszt Wyjazdu (PLN)', font: { size: 16 } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) { return context.dataset.label + ': ' + context.raw + ' PLN'; }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, beginAtZero: true }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
